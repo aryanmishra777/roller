@@ -191,7 +191,6 @@ public class WeblogEntry implements Serializable {
     }
     
     public WeblogEntry(
-            String id,
             WeblogCategory category,
             Weblog website,
             User creator,
@@ -202,7 +201,6 @@ public class WeblogEntry implements Serializable {
             Timestamp pubTime,
             Timestamp updateTime,
             PubStatus status) {
-        //this.id = id;
         this.category = category;
         this.website = website;
         this.creator = creator;
@@ -822,7 +820,9 @@ public class WeblogEntry implements Serializable {
         try {
             WeblogEntryManager wmgr = WebloggerFactory.getWeblogger().getWeblogEntryManager();
             return getComments(wmgr, approvedOnly);
-        } catch (WebloggerException alreadyLogged) {}
+        } catch (WebloggerException alreadyLogged) {
+            // Ignored, returning empty list
+        }
         
         return Collections.emptyList();
     }
@@ -841,7 +841,9 @@ public class WeblogEntry implements Serializable {
             csc.setEntry(this);
             csc.setStatus(approvedOnly ? WeblogEntryComment.ApprovalStatus.APPROVED : null);
             return wmgr.getComments(csc);
-        } catch (WebloggerException alreadyLogged) {}
+        } catch (WebloggerException alreadyLogged) {
+            // Ignored, empty list returned
+        }
         
         return Collections.emptyList();
     }
@@ -878,7 +880,7 @@ public class WeblogEntry implements Serializable {
      * @deprecated Use getPermalink() instead.
      */
     @Deprecated
-    public String getPermaLink() {
+    public String getRelativePermalink() {
         String lAnchor = URLEncoder.encode(getAnchor(), StandardCharsets.UTF_8);
         return "/" + getWebsite().getHandle() + "/entry/" + lAnchor;
     }
@@ -889,7 +891,7 @@ public class WeblogEntry implements Serializable {
      */
     @Deprecated
     public String getCommentsLink() {
-        return getPermaLink() + "#comments";
+        return getRelativePermalink() + "#comments";
     }
     
     /**
